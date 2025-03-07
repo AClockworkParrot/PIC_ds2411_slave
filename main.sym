@@ -2,16 +2,22 @@
 011     @SCRATCH
 011     _RETURN_
 012     @TRIS_B
-013     ow_error
-014-01B m
-01C     ow_status
-01D     ow_buffer
+013     MAIN.i
+014     @delay_ms1.P1
+014     OW_reset_pulse.del_count
+014     MAIN.@SCRATCH1
+015     OW_write_byte.write_data
+016     OW_write_byte.@SCRATCH1
+017     OW_write_bit.write_bit
 
 ROM Allocation:
-0002  MAIN
-0002  @cinit
-0136  RST
-0136  end
+0045  @delay_ms1
+0006  m
+000F  OW_reset_pulse
+0029  OW_write_bit
+007C  OW_write_byte
+0056  MAIN
+0056  @cinit
 
 Project Directory:
     C:\PIC_projects\ds2411_v2\
@@ -21,7 +27,6 @@ Project Files:
     main.h
     ..\..\Program Files (x86)\PICC\Devices\10F220.h
     config.h
-    1wire.h
 
 Units:
     main.c (main)

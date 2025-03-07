@@ -1,0 +1,90 @@
+C L "main" 0 5 1 "FUNCTION"
+D G "__PCB__" 0 58 ""4.068""
+D G "__DEVICE__" 0 58 "220"
+D G "__DATE__" 0 58 ""07-мар-25""
+D G "__TIME__" 0 58 ""17:32:02"" "*  basic 1-wire slave functions"
+C G "" 0 1 1 "*"
+C G "" 0 1 1 "*"
+C G "" 1 1 1 "*"
+C G "" 1 1 1 "*"
+D G "CONFIG_H_" 1 9 ""
+D G "_XTAL_FREQ" 1 13 "8000000" "4MHz"
+D G "SHT1x" 1 17 "" "leave uncommented if you have sht2x sensor supporting i2c connected to pic"
+D G "INPUT" 1 21 "1"
+D G "OUTPUT" 1 22 "0"
+D G "HIGH" 1 23 "1"
+D G "LOW" 1 24 "0"
+D G "OW" 1 26 "PIN_B0" "pin 6 for 1-wire data (this can't be changed)"
+D G "TRIS_OW" 1 27 "TRISB0"
+D G "MOD1" 1 29 "" "my first design used different pins"
+D G "DATA" 1 32 "RB6" "pin 12 for sht data"
+D G "SCK" 1 33 "RB7" "pin 13 for sht clock"
+D G "TRIS_DATA" 1 34 "TRISB6"
+D G "TRIS_SCK" 1 35 "TRISB7"
+C L "byte" 1 1 1 "FUNCTION"
+F B "CONFIG_H_" 0 0
+F B "_XTAL_FREQ" 1 0
+F B "SHT1x" 0 0
+F B "INPUT" 1 0
+F B "OUTPUT" 2 0
+F B "HIGH" 3 0
+F B "LOW" 2 2
+F B "OW" 2 2
+F B "TRIS_OW" 2 0
+F B "MOD1" 2 0
+F B "DATA" 2 0
+F B "SCK" 2 0
+F B "TRIS_DATA" 3 0
+F B "TRIS_SCK" 3 0
+F B "byte" 2 0
+F B "ow_error" 2 0
+F B "bit_set" 2 0
+F B "bit_clear" 2 0
+F B "bit_test" 2 0
+F B "toupper" 1 0
+F B "tolower" 1 0
+F B "swap" 1 0
+F B "printf" 1 255
+F B "fprintf" 1 255
+F B "sprintf" 1 255
+F B "make8" 2 0
+F B "make16" 2 0
+F B "make32" 1 255
+F B "label_address" 1 1
+F B "goto_address" 1 0
+F B "_va_arg" 1 0
+F B "offsetofbit" 2 2
+F B "output_high" 1 0
+F B "output_low" 1 0
+F B "input" 1 0
+F B "input_state" 1 0
+F B "output_float" 1 0
+F B "output_drive" 1 0
+F B "output_bit" 1 1
+F B "output_toggle" 1 0
+F B "output_b" 1 0
+F B "input_b" 0 0
+F B "set_tris_b" 1 0
+F B "get_tris_b" 0 0
+F B "setup_counters" 2 0
+F B "setup_wdt" 1 0
+F B "restart_cause" 0 0
+F B "restart_wdt" 0 0
+F B "get_rtcc" 0 0
+F B "set_rtcc" 1 0
+F B "get_timer0" 0 0
+F B "set_timer0" 1 0
+F B "setup_port_a" 1 0
+F B "setup_adc_ports" 1 0
+F B "setup_adc" 1 0
+F B "set_adc_channel" 1 0
+F B "read_adc" 0 1
+F B "adc_done" 0 0
+F B "setup_timer_0" 1 0
+F B "delay_ms" 1 0
+F B "delay_us" 1 0
+F B "putchar" 1 2
+F B "puts" 1 2
+F B "getch" 0 1
+F B "gets" 1 3
+F B "kbhit" 0 1

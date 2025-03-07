@@ -14,7 +14,7 @@ byte OW_reset_pulse (void)
     byte del_count = 50;
     while (del_count--) // this loop takes 13.6 us
     {
-        __delay_us(10);
+        delay_us(10);
         if (OW)         // 124.8 us to here since master pulls bus low
         {
             break;
@@ -168,21 +168,4 @@ byte OW_read_byte (void)
     if (ow_error)
         return 0;
     return result;
-}
-// these functions are for 1-wire serial number checksum generation
-void C_CRC(byte *CRCVal, byte value) {
-    byte odd, bcnt;
-    for (bcnt = 0; bcnt < 8; bcnt++) {
-        odd = (value ^ *CRCVal) & 0x01;
-        *CRCVal >>= 1;
-        value >>= 1;
-        if (odd != 0)
-            *CRCVal ^= 0x8C;
-    }
-}
-byte CalcCRC(byte code_len, byte *code) {
-    byte i, CRCVal = 0;
-    for (i = code_len; i > 0; i--)
-        C_CRC(&CRCVal, code[i]);
-    return CRCVal;
 }

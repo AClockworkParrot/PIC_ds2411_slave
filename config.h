@@ -7,10 +7,16 @@
 
 #ifndef CONFIG_H_
 #define CONFIG_H_
-//#include <htc.h>
 
-#define _XTAL_FREQ    4000000 // 4MHz
-//#define byte unsigned char
+#define drive_OW_low() { SET_TRIS_B(0b11111110); OUTPUT_LOW(PIN_B0); }
+#define drive_OW_high() { SET_TRIS_B(0b11111111);}
+#define OW_presence_pulse() {\
+drive_OW_low();  \
+delay_us(120); \
+drive_OW_high(); \
+}
+
+#define _XTAL_FREQ    8000000 // 4MHz
 
 // leave uncommented only necessary module
 // only one module may be compiled into hex due to PIC code space limits
@@ -35,12 +41,12 @@
 #define TRIS_SCK            TRISB7
 
 // some global vars
-byte ow_error;      // error on ow line
+//byte ow_error;      // error on ow line
 ///byte sensor_error;  // error on sensor line
 ///byte scratchpad[6]; // 6-byte buffer [h-msb h-lsb h-crc t-msb t-lsb t-crc]
 
 
-#include "1wire.h"
+
 //#include "sht1x.h"
 
 

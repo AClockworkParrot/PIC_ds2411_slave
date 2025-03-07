@@ -1,142 +1,98 @@
 #include "C:\PIC_projects\ds2411_v2\main.h"
 #include "config.h"
 
-byte m[8] ={0xBF, 0x42, 0x41, 0x52, 0x54, 0x45, 0x4B, 0xFF};  // serial number sequence:
-                                                                // family code 0xBF,
-                                                       
-void Read_SN(void);
+byte const m[8] = {0x01, 0xE0, 0x65, 0x72, 0x11, 0x00, 0x00, 0xA3};  // serial number sequence
 
-///byte SN[8];     // serial number
-byte ow_status; // 1-wire status: 0 - waiting for reset
-// ROM_CMD - waiting for rom command
-// FUNCTION_CMD - waiting for function command
-byte ow_buffer; // buffer for data received on 1-wire line
-//byte timeout;   // timeout to go to sleep while inactive
-// because of tight timings we avoid sleep during conversation
 
-///#define INIT_SEQ (ow_status = 0, ow_error = 0, ow_buffer = 0, timeout = 10)
-
-void delay_us()
+// func for detect reset pulse
+byte OW_reset_pulse (void)
 {
+    byte del_count = 50;
+    while (del_count--) // this loop takes 13.6 us
+    {
+        delay_us(10);
+        if (OW)         // 124.8 us to here since master pulls bus low
+        {
+            break;
+        }
+    }
+    if (del_count > 40) {
+        return 0; // too short
+    }
+    return 1;     // reset pulse detected
 }
 
-
-void ISR(void)
+// 1-wire slave write bit
+// must be run immediately after line is pulled down by master
+void OW_write_bit (byte write_bit)
 {
-    byte i;
- //   byte current_byte;
-    
-    if (ow_status == ROM_CMD) { // ROM command
-        ow_buffer = OW_read_byte();
-        if (ow_error) {
-            goto RST;
-        }
-        switch (ow_buffer) {
-            case 0x33: //send rom
-                i = 7;
-                do {
-                    while (OW);
-                    OW_write_byte(m[i]);
-                } while (i--);
-                break;
-        }
-   //     INIT_SEQ;
-    end:
-        //INTF = 0;
-        return;
-    } else if (ow_status == FUNCTION_CMD) { // Function command
-        ow_buffer = OW_read_byte();
-        if (ow_error) {
-            goto RST;
-        }
-        /*switch (ow_buffer) {
-            case 0x44: // start conversion
-                // currently we have functions for sensirion sht sensors
-                // but any other sensor functions could be inserted here
-                // measurments from sensors should be put into scratchpad
-                sensor_error = 0;
-                // initiate sensor measurments and read readings into scratchpad
-                sht1x_read_buf(); // measure humidity and temperature
+    if (write_bit)
+    {
+        //writing a bit '1'
+        delay_us(55);//55                // bus is already pulled high by pullup resistor, so just wait
+    }
+    else
+    {
+        //writing a bit '0'
+        drive_OW_low();                    // drive the bus low
+        delay_us(17);//15
+        drive_OW_high();                   // release the bus
+        delay_us(35);//35
+    }
+}
 
-                // in case of sensor error reset it
-                if (sensor_error != 0) {
-                    sht1x_connectionreset();
-                }
-                break;
-            case 0xBE: // read scratchpad
-                if (sensor_error == 0) {
-                    while (OW);
-                    OW_write_byte(scratchpad[0]);
-                    while (OW);
-                    OW_write_byte(scratchpad[1]);
-                    while (OW);
-                    OW_write_byte(scratchpad[2]);
-                    while (OW);
-                    OW_write_byte(scratchpad[3]);
-                    while (OW);
-                    OW_write_byte(scratchpad[4]);
-                    while (OW);
-                    OW_write_byte(scratchpad[5]);
-                    while (OW);
-                    //OW_write_byte(SENSOR_TYPE); // add sensor type so that 1-wire master knows how to process data
-                }
-                break;
-        }*/
- //       INIT_SEQ;
-        //INTF = 0;
-        return;
-    }
-RST:
-    if (OW_reset_pulse()) {  // if reset detected
-        delay_us(30);
-       // OW_presence_pulse(); // generate presence pulse
- //       INIT_SEQ;
-        ow_status = ROM_CMD; // and wait for rom command
-    }else{
- //       INIT_SEQ; // else reset all settings
-    }
-    //INTF = 0;
-    return;
+// func for write bytes
+void OW_write_byte (byte write_data)
+{
+    OW_write_bit(write_data & 0x01);     // sending LS-bit first
+    while (OW);                          // wait for master set bus low
+    write_data >>= 1;                    // shift the data byte for the next bit to send
+    OW_write_bit(write_data & 0x01);
+    while (OW);
+    write_data >>= 1;
+    OW_write_bit(write_data & 0x01);
+    while (OW);
+    write_data >>= 1;
+    OW_write_bit(write_data & 0x01);
+    while (OW);
+    write_data >>= 1;
+    OW_write_bit(write_data & 0x01);
+    while (OW);
+    write_data >>= 1;
+    OW_write_bit(write_data & 0x01);
+    while (OW);
+    write_data >>= 1;
+    OW_write_bit(write_data & 0x01);
+    while (OW);
+    write_data >>= 1;
+    OW_write_bit(write_data & 0x01);
 }
 
 void main()
 {
+byte i;
+    // Initialization
+    //  setup_timer_0(RTCC_INTERNAL | RTCC_DIV_1); // Configure Timer 0
+    //   SET_TRIS_B(0xFF); // Configure port B as input
+    SETUP_WDT(WDT_2304MS); // Configure Watchdog Timer
 
-   //setup_adc_ports(NO_ANALOGS);
-   //setup_adc(ADC_OFF);
-   setup_timer_0(RTCC_INTERNAL|RTCC_DIV_1);
-
-   // TODO: USER CODE!!
-   /// TRISA = 0xFF; //all inputs
+    while (TRUE) {
+        // Periodic code execution, similar to interrupts
+       
+        
+        // Check for reset and reset 1-Wire device
+        if (OW_reset_pulse()) {  // if reset pulse detected
+            delay_us(30); // эмпирически подобрать задержку
+        for ( i = 0; i < 8; i++) {  // Loop over the array length
    
-   SET_TRIS_B(0xFF);
-   //TRISB = 0xFF;
-   // PSA = 1;    // prescaler assigned to WDT
-   // PS0 = 1; PS1 = 1; PS2 = 1; //prescale = 128, WDT period = 2.3 s
-   SETUP_WDT(WDT_2304MS);
-//    Read_SN();  // read serial number from eeprom
-   // INTEDG = 0; // external interrupt on falling edge
-  //  INTE = 1;   // enable external interrupts
-  //  GIE = 1;    // enable global interrupts
-   while(TRUE)
-   {
-   //   while (timeout) { // go to sleep after 1 second of inactivity
-    //  CLRWDT();
-   //  delay_ms(100); // 0.1 s * 10 = 1 s
-  RESTART_WDT();
- // timeout--;
-      }
-  RESTART_WDT();
-  //CLRWDT();
-      SLEEP();
-    //  NOP();
-  // }
-}
+        while (OW); // Wait for 1-Wire to be idle
+   
+        OW_write_byte(m[i]); // Send the byte
+        }
+   }
+        
+     //   Watchdog Timer handling
+     RESTART_WDT();
+        delay_ms(100); // Delay 0.1 s * 10 = 1 s
+    }}
 
-/*void Read_SN(void) {
-    byte address = 0;
-    do {
-        SN[7-address] = EEPROM_READ(address);
-    } while (++address < 7);
-    SN[7-address] = CalcCRC(7, SN);
-}*/

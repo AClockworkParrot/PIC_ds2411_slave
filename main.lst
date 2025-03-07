@@ -1,16 +1,20 @@
-CCS PCB C Compiler, Version 4.068, 35766               06-мар-25 20:06
+CCS PCB C Compiler, Version 4.068, 35766               07-мар-25 18:56
 
                Filename: main.lst
 
-               ROM used: 42 words (16%)
-                         Largest free fragment is 214
-               RAM used: 14 (88%) at main() level
-                         14 (88%) worst case
-               Stack:    0 locations
+               ROM used: 187 words (73%)
+                         Largest free fragment is 69
+               RAM used: 5 (31%) at main() level
+                         8 (50%) worst case
+               Stack:    1 locations
 
 *
 0000:  MOVWF  05
-0001:  GOTO   002
+0001:  GOTO   056
+0002:  GOTO   00F
+0003:  GOTO   006
+0004:  GOTO   029
+0005:  GOTO   045
 .................... #include "C:\PIC_projects\ds2411_v2\main.h" 
 .................... #include <10F220.h> 
 .................... //////// Standard Header file for the PIC10F220 device //////////////// 
@@ -26,6 +30,24 @@ CCS PCB C Compiler, Version 4.068, 35766               06-мар-25 20:06
 .................... #FUSES IOSC8                    //INTOSC speed 8MHz 
 ....................  
 .................... #use delay(clock=8000000) 
+*
+0045:  MOVF   14,W
+0046:  BTFSC  03.2
+0047:  GOTO   055
+0048:  MOVLW  02
+0049:  MOVWF  11
+004A:  CLRF   10
+004B:  DECFSZ 10,F
+004C:  GOTO   04B
+004D:  DECFSZ 11,F
+004E:  GOTO   04A
+004F:  MOVLW  97
+0050:  MOVWF  10
+0051:  DECFSZ 10,F
+0052:  GOTO   051
+0053:  DECFSZ 14,F
+0054:  GOTO   048
+0055:  GOTO   0BF (RETURN)
 .................... #use rs232(baud=9600,parity=N,xmit=PIN_B0,rcv=PIN_B0,bits=8) 
 ....................  
 ....................  
@@ -39,10 +61,16 @@ CCS PCB C Compiler, Version 4.068, 35766               06-мар-25 20:06
 ....................  
 .................... #ifndef CONFIG_H_ 
 .................... #define CONFIG_H_ 
-.................... //#include <htc.h> 
 ....................  
-.................... #define _XTAL_FREQ    4000000 // 4MHz 
-.................... //#define byte unsigned char 
+.................... #define drive_OW_low() { SET_TRIS_B(0b11111110); OUTPUT_LOW(PIN_B0); } 
+.................... #define drive_OW_high() { SET_TRIS_B(0b11111111);} 
+.................... #define OW_presence_pulse() {\ 
+.................... drive_OW_low();  \ 
+.................... delay_us(120); \ 
+.................... drive_OW_high(); \ 
+.................... } 
+....................  
+.................... #define _XTAL_FREQ    8000000 // 4MHz 
 ....................  
 .................... // leave uncommented only necessary module 
 .................... // only one module may be compiled into hex due to PIC code space limits 
@@ -67,44 +95,11 @@ CCS PCB C Compiler, Version 4.068, 35766               06-мар-25 20:06
 .................... #define TRIS_SCK            TRISB7 
 ....................  
 .................... // some global vars 
-.................... byte ow_error;      // error on ow line 
+.................... //byte ow_error;      // error on ow line 
 .................... ///byte sensor_error;  // error on sensor line 
 .................... ///byte scratchpad[6]; // 6-byte buffer [h-msb h-lsb h-crc t-msb t-lsb t-crc] 
 ....................  
 ....................  
-.................... #include "1wire.h" 
-.................... /* 
-....................  *    created: April 2011 
-....................  *    author: Bartek Fabiszewski (www.fabiszewski.net) 
-....................  */ 
-.................... #ifndef _1wire_H 
-.................... #define _1wire_H 
-....................  
-.................... // macros 
-.................... // I turned some functions into macros to avoid losing time on jumps 
-.................... #define drive_OW_low() { TRIS_OW = OUTPUT; OW = LOW; } 
-.................... #define drive_OW_high() { TRIS_OW = INPUT;} 
-.................... #define OW_presence_pulse() {\ 
-.................... drive_OW_low();  \ 
-.................... delay_us(120); \ 
-.................... drive_OW_high(); \ 
-.................... } 
-....................  
-.................... #define ROM_CMD                1        // ROM Command 
-.................... #define FUNCTION_CMD           2        // Function Command 
-....................  
-.................... // prototypes 
-.................... void OW_write_bit (byte write_data); 
-.................... byte OW_read_bit (void); 
-.................... byte OW_reset_pulse (void); 
-.................... void OW_write_byte (byte write_data); 
-.................... byte OW_read_byte (void); 
-.................... byte OW_match_search (byte write_bit); 
-.................... byte OW_match_bits (byte read_bit); 
-.................... void C_CRC(byte *CRCVal, byte value); 
-.................... byte CalcCRC(byte code_len, byte *code); 
-....................  
-.................... #endif 
 ....................  
 .................... //#include "sht1x.h" 
 ....................  
@@ -112,187 +107,265 @@ CCS PCB C Compiler, Version 4.068, 35766               06-мар-25 20:06
 .................... #endif /* CONFIG_H_ */ 
 ....................  
 ....................  
-.................... byte m[8] ={0xBF, 0x42, 0x41, 0x52, 0x54, 0x45, 0x4B, 0xFF};  // serial number sequence: 
-0009:  MOVLW  BF
-000A:  MOVWF  14
-000B:  MOVLW  42
-000C:  MOVWF  15
-000D:  MOVLW  41
-000E:  MOVWF  16
-000F:  MOVLW  52
-0010:  MOVWF  17
-0011:  MOVLW  54
-0012:  MOVWF  18
-0013:  MOVLW  45
-0014:  MOVWF  19
-0015:  MOVLW  4B
-0016:  MOVWF  1A
-0017:  MOVLW  FF
-0018:  MOVWF  1B
-....................                                                                 // family code 0xBF, 
-....................                                                         
-.................... void Read_SN(void); 
+.................... byte const m[8] = {0x01, 0xE0, 0x65, 0x72 0x11, 0x00, 0x00, 0xA3};  // serial number sequence 
 ....................  
-.................... ///byte SN[8];     // serial number 
-.................... byte ow_status; // 1-wire status: 0 - waiting for reset 
-.................... // ROM_CMD - waiting for rom command 
-.................... // FUNCTION_CMD - waiting for function command 
-.................... byte ow_buffer; // buffer for data received on 1-wire line 
-.................... //byte timeout;   // timeout to go to sleep while inactive 
-.................... // because of tight timings we avoid sleep during conversation 
 ....................  
-.................... ///#define INIT_SEQ (ow_status = 0, ow_error = 0, ow_buffer = 0, timeout = 10) 
-....................  
-.................... void delay_us() 
+.................... // func for detect reset pulse 
+.................... byte OW_reset_pulse (void) 
 .................... { 
+....................     byte del_count = 50; 
+*
+000F:  MOVLW  32
+0010:  MOVWF  14
+....................     while (del_count--) // this loop takes 13.6 us 
+....................     { 
+0011:  MOVF   14,W
+0012:  DECF   14,F
+0013:  XORLW  00
+0014:  BTFSC  03.2
+0015:  GOTO   01D
+....................         delay_us(10); 
+0016:  MOVLW  06
+0017:  MOVWF  10
+0018:  DECFSZ 10,F
+0019:  GOTO   018
+001A:  NOP
+....................         if (OW)         // 124.8 us to here since master pulls bus low 
+....................         { 
+....................             break; 
+001B:  GOTO   01D
+....................         } 
+....................     } 
+001C:  GOTO   011
+....................     if (del_count > 40) { 
+001D:  MOVLW  28
+001E:  MOVWF  10
+001F:  MOVF   14,W
+0020:  SUBWF  10,W
+0021:  BTFSC  03.0
+0022:  GOTO   026
+....................         return 0; // too short 
+0023:  MOVLW  00
+0024:  MOVWF  11
+0025:  GOTO   028
+....................     } 
+....................     return 1;     // reset pulse detected 
+0026:  MOVLW  01
+0027:  MOVWF  11
 .................... } 
+0028:  GOTO   067 (RETURN)
 ....................  
-....................  
-.................... void ISR(void) 
+.................... // 1-wire slave write bit 
+.................... // must be run immediately after line is pulled down by master 
+.................... void OW_write_bit (byte write_bit) 
 .................... { 
-....................     byte i; 
-....................  //   byte current_byte; 
-....................      
-....................     if (ow_status == ROM_CMD) { // ROM command 
-....................         ow_buffer = OW_read_byte(); 
-....................         if (ow_error) { 
-....................             goto RST; 
-....................         } 
-....................         switch (ow_buffer) { 
-....................             case 0x33: //send rom 
-....................                 i = 7; 
-....................                 do { 
-....................                     while (OW); 
-....................                     OW_write_byte(m[i]); 
-....................                 } while (i--); 
-....................                 break; 
-....................         } 
-....................    //     INIT_SEQ; 
-....................     end: 
-....................         //INTF = 0; 
-....................         return; 
-....................     } else if (ow_status == FUNCTION_CMD) { // Function command 
-....................         ow_buffer = OW_read_byte(); 
-....................         if (ow_error) { 
-....................             goto RST; 
-....................         } 
-....................         /*switch (ow_buffer) { 
-....................             case 0x44: // start conversion 
-....................                 // currently we have functions for sensirion sht sensors 
-....................                 // but any other sensor functions could be inserted here 
-....................                 // measurments from sensors should be put into scratchpad 
-....................                 sensor_error = 0; 
-....................                 // initiate sensor measurments and read readings into scratchpad 
-....................                 sht1x_read_buf(); // measure humidity and temperature 
+....................     if (write_bit) 
+0029:  MOVF   17,F
+002A:  BTFSC  03.2
+002B:  GOTO   032
+....................     { 
+....................         //writing a bit '1' 
+....................         delay_us(55);//55                // bus is already pulled high by pullup resistor, so just wait 
+002C:  MOVLW  24
+002D:  MOVWF  10
+002E:  DECFSZ 10,F
+002F:  GOTO   02E
+0030:  NOP
+....................     } 
+....................     else 
+0031:  GOTO   044
+....................     { 
+....................         //writing a bit '0' 
+....................         drive_OW_low();                    // drive the bus low 
+0032:  MOVLW  FE
+0033:  TRIS   6
+0034:  MOVWF  12
+0035:  BCF    12.0
+0036:  MOVF   12,W
+0037:  TRIS   6
+0038:  BCF    06.0
+....................         delay_us(17);//15 
+0039:  MOVLW  0B
+003A:  MOVWF  10
+003B:  DECFSZ 10,F
+003C:  GOTO   03B
+....................         drive_OW_high();                   // release the bus 
+003D:  MOVLW  FF
+003E:  TRIS   6
+003F:  MOVWF  12
+....................         delay_us(35);//35 
+0040:  MOVLW  17
+0041:  MOVWF  10
+0042:  DECFSZ 10,F
+0043:  GOTO   042
+....................     } 
+.................... } 
+0044:  RETLW  00
 ....................  
-....................                 // in case of sensor error reset it 
-....................                 if (sensor_error != 0) { 
-....................                     sht1x_connectionreset(); 
-....................                 } 
-....................                 break; 
-....................             case 0xBE: // read scratchpad 
-....................                 if (sensor_error == 0) { 
-....................                     while (OW); 
-....................                     OW_write_byte(scratchpad[0]); 
-....................                     while (OW); 
-....................                     OW_write_byte(scratchpad[1]); 
-....................                     while (OW); 
-....................                     OW_write_byte(scratchpad[2]); 
-....................                     while (OW); 
-....................                     OW_write_byte(scratchpad[3]); 
-....................                     while (OW); 
-....................                     OW_write_byte(scratchpad[4]); 
-....................                     while (OW); 
-....................                     OW_write_byte(scratchpad[5]); 
-....................                     while (OW); 
-....................                     //OW_write_byte(SENSOR_TYPE); // add sensor type so that 1-wire master knows how to process data 
-....................                 } 
-....................                 break; 
-....................         }*/ 
-....................  //       INIT_SEQ; 
-....................         //INTF = 0; 
-....................         return; 
-....................     } 
-.................... RST: 
-....................     if (OW_reset_pulse()) {  // if reset detected 
-....................         delay_us(30); 
-....................        // OW_presence_pulse(); // generate presence pulse 
-....................  //       INIT_SEQ; 
-....................         ow_status = ROM_CMD; // and wait for rom command 
-....................     }else{ 
-....................  //       INIT_SEQ; // else reset all settings 
-....................     } 
-....................     //INTF = 0; 
-....................     return; 
+.................... // func for write bytes 
+.................... void OW_write_byte (byte write_data) 
+.................... { 
+....................     OW_write_bit(write_data & 0x01);     // sending LS-bit first 
+*
+007C:  MOVF   15,W
+007D:  ANDLW  01
+007E:  MOVWF  16
+007F:  MOVWF  17
+0080:  CALL   029
+....................     while (OW);                          // wait for master set bus low 
+0081:  GOTO   081
+....................     write_data >>= 1;                    // shift the data byte for the next bit to send 
+0082:  BCF    03.0
+0083:  RRF    15,F
+....................     OW_write_bit(write_data & 0x01); 
+0084:  MOVF   15,W
+0085:  ANDLW  01
+0086:  MOVWF  16
+0087:  MOVWF  17
+0088:  CALL   029
+....................     while (OW); 
+0089:  GOTO   089
+....................     write_data >>= 1; 
+008A:  BCF    03.0
+008B:  RRF    15,F
+....................     OW_write_bit(write_data & 0x01); 
+008C:  MOVF   15,W
+008D:  ANDLW  01
+008E:  MOVWF  16
+008F:  MOVWF  17
+0090:  CALL   029
+....................     while (OW); 
+0091:  GOTO   091
+....................     write_data >>= 1; 
+0092:  BCF    03.0
+0093:  RRF    15,F
+....................     OW_write_bit(write_data & 0x01); 
+0094:  MOVF   15,W
+0095:  ANDLW  01
+0096:  MOVWF  16
+0097:  MOVWF  17
+0098:  CALL   029
+....................     while (OW); 
+0099:  GOTO   099
+....................     write_data >>= 1; 
+009A:  BCF    03.0
+009B:  RRF    15,F
+....................     OW_write_bit(write_data & 0x01); 
+009C:  MOVF   15,W
+009D:  ANDLW  01
+009E:  MOVWF  16
+009F:  MOVWF  17
+00A0:  CALL   029
+....................     while (OW); 
+00A1:  GOTO   0A1
+....................     write_data >>= 1; 
+00A2:  BCF    03.0
+00A3:  RRF    15,F
+....................     OW_write_bit(write_data & 0x01); 
+00A4:  MOVF   15,W
+00A5:  ANDLW  01
+00A6:  MOVWF  16
+00A7:  MOVWF  17
+00A8:  CALL   029
+....................     while (OW); 
+00A9:  GOTO   0A9
+....................     write_data >>= 1; 
+00AA:  BCF    03.0
+00AB:  RRF    15,F
+....................     OW_write_bit(write_data & 0x01); 
+00AC:  MOVF   15,W
+00AD:  ANDLW  01
+00AE:  MOVWF  16
+00AF:  MOVWF  17
+00B0:  CALL   029
+....................     while (OW); 
+00B1:  GOTO   0B1
+....................     write_data >>= 1; 
+00B2:  BCF    03.0
+00B3:  RRF    15,F
+....................     OW_write_bit(write_data & 0x01); 
+00B4:  MOVF   15,W
+00B5:  ANDLW  01
+00B6:  MOVWF  16
+00B7:  MOVWF  17
+00B8:  CALL   029
 .................... } 
 ....................  
 .................... void main() 
 .................... { 
 *
-0002:  CLRF   04
-0003:  BCF    12.0
-0004:  MOVF   12,W
-0005:  TRIS   6
-0006:  BSF    06.0
-....................  
-....................    //setup_adc_ports(NO_ANALOGS); 
-....................    //setup_adc(ADC_OFF); 
-....................    setup_timer_0(RTCC_INTERNAL|RTCC_DIV_1); 
+0056:  CLRF   04
+0057:  BCF    12.0
+0058:  MOVF   12,W
+0059:  TRIS   6
+005A:  BSF    06.0
+.................... byte i; 
+....................     // Initialization 
+....................     //  setup_timer_0(RTCC_INTERNAL | RTCC_DIV_1); // Configure Timer 0 
+....................     //   SET_TRIS_B(0xFF); // Configure port B as input 
+....................     SETUP_WDT(WDT_2304MS); // Configure Watchdog Timer 
 *
-0019:  MOVLW  08
-001A:  OPTION
+005D:  MOVLW  0F
+005E:  MOVWF  10
+005F:  MOVLW  07
+0060:  CLRF   01
+0061:  MOVLW  0F
+0062:  OPTION
+0063:  CLRWDT
+0064:  MOVF   10,W
+0065:  OPTION
 ....................  
-....................    // TODO: USER CODE!! 
-....................    /// TRISA = 0xFF; //all inputs 
+....................     while (TRUE) { 
+....................         // Periodic code execution, similar to interrupts 
+....................         
+....................          
+....................         // Check for reset and reset 1-Wire device 
+....................         if (OW_reset_pulse()) {  // if reset pulse detected 
+0066:  GOTO   002
+0067:  MOVF   11,F
+0068:  BTFSC  03.2
+0069:  GOTO   0BB
+....................             delay_us(30); // эмпирически подобрать задержку 
+006A:  MOVLW  13
+006B:  MOVWF  10
+006C:  DECFSZ 10,F
+006D:  GOTO   06C
+006E:  GOTO   06F
+....................         for ( i = 0; i < 8; i++) {  // Loop over the array length 
+006F:  CLRF   13
+0070:  MOVLW  07
+0071:  MOVWF  10
+0072:  MOVF   13,W
+0073:  SUBWF  10,W
+0074:  BTFSS  03.0
+0075:  GOTO   0BB
 ....................     
-....................    SET_TRIS_B(0xFF); 
-001B:  MOVLW  FF
-001C:  TRIS   6
-001D:  MOVWF  12
-....................    //TRISB = 0xFF; 
-....................    // PSA = 1;    // prescaler assigned to WDT 
-....................    // PS0 = 1; PS1 = 1; PS2 = 1; //prescale = 128, WDT period = 2.3 s 
-....................    SETUP_WDT(WDT_2304MS); 
-001E:  MOVLW  0F
-001F:  MOVWF  10
-0020:  MOVLW  07
-0021:  CLRF   01
-0022:  MOVLW  0F
-0023:  OPTION
-0024:  CLRWDT
-0025:  MOVF   10,W
-0026:  OPTION
-.................... //    Read_SN();  // read serial number from eeprom 
-....................    // INTEDG = 0; // external interrupt on falling edge 
-....................   //  INTE = 1;   // enable external interrupts 
-....................   //  GIE = 1;    // enable global interrupts 
-....................    while(TRUE) 
-....................    { 
-....................    //   while (timeout) { // go to sleep after 1 second of inactivity 
-....................     //  CLRWDT(); 
-....................    //  delay_ms(100); // 0.1 s * 10 = 1 s 
-....................   RESTART_WDT(); 
-0027:  CLRWDT
-....................  // timeout--; 
-....................       } 
-0028:  GOTO   027
-....................   RESTART_WDT(); 
-0029:  CLRWDT
-....................   //CLRWDT(); 
-....................       SLEEP(); 
-002A:  SLEEP
-....................     //  NOP(); 
-....................   // } 
-.................... } 
+....................         while (OW); // Wait for 1-Wire to be idle 
+0076:  GOTO   076
+....................     
+....................         OW_write_byte(m[i]); // Send the byte 
+0077:  MOVF   13,W
+0078:  CALL   006
+0079:  MOVWF  14
+007A:  MOVF   14,W
+007B:  MOVWF  15
+....................         } 
+*
+00B9:  INCF   13,F
+00BA:  GOTO   070
+....................    } 
+....................          
+....................      //   Watchdog Timer handling 
+....................      RESTART_WDT(); 
+00BB:  CLRWDT
+....................         delay_ms(100); // Delay 0.1 s * 10 = 1 s 
+00BC:  MOVLW  64
+00BD:  MOVWF  14
+00BE:  GOTO   005
+....................     }} 
+00BF:  GOTO   066
 ....................  
-.................... /*void Read_SN(void) { 
-....................     byte address = 0; 
-....................     do { 
-....................         SN[7-address] = EEPROM_READ(address); 
-....................     } while (++address < 7); 
-....................     SN[7-address] = CalcCRC(7, SN); 
-.................... }*/ 
-002B:  SLEEP
+00C0:  SLEEP
 
 Configuration Fuses:
    Word  1: 0FEB   NOMCLR NOPROTECT NOWDT NOMCPU IOSC8
