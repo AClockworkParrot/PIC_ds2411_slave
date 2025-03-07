@@ -1,15 +1,8 @@
 ÀÄmain
-   ÀÄMAIN  0/107  Ram=2
+   ÀÄMAIN  0/46  Ram=2
       ÃÄ??0??
-      ÃÄOW_reset_pulse  0/26  Ram=1
+      ÃÄOW_reset_pulse  0/25  Ram=1
       ÃÄ@const45  0/9  Ram=0
-      ÃÄOW_write_byte  (Inline)  Ram=2
-      ³  ÃÄOW_write_bit  0/28  Ram=1
-      ³  ÃÄOW_write_bit  0/28  Ram=1
-      ³  ÃÄOW_write_bit  0/28  Ram=1
-      ³  ÃÄOW_write_bit  0/28  Ram=1
-      ³  ÃÄOW_write_bit  0/28  Ram=1
-      ³  ÃÄOW_write_bit  0/28  Ram=1
-      ³  ÃÄOW_write_bit  0/28  Ram=1
-      ³  ÀÄOW_write_bit  0/28  Ram=1
+      ÃÄOW_write_byte  0/45  Ram=3
+      ³  ÀÄOW_write_bit  (Inline)  Ram=1
       ÀÄ@delay_ms1  0/17  Ram=1

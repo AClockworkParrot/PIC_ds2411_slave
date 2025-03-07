@@ -1,48 +1,48 @@
 
-ROM used: 187 (73%)
-          187 (73%) including unused fragments
+ROM used: 142 (55%)
+          142 (55%) including unused fragments
 
-          1 Average locations per line
+          0 Average locations per line
           3 Average locations per statement
 
 RAM used: 5 (31%) at main() level
-          8 (50%) worst case
+          9 (56%) worst case
 
 Stack used: 1 worst case (out of 2 total available)
 
 Lines Stmts  %   Files
 ----- ----- ---  -----
-   99    65 100  main.c
+  112    45 100  main.c
    13     0   0  main.h
   118     0   0  ..\..\Program Files (x86)\PICC\Devices\10F220.h
    54     0   0  config.h
 ----- -----
-  284    65 Total
+  297    45 Total
 
 Page ROM  %  RAM   Vol Diff  Functions:
 ---- --- --- ---   --- ----  ----------
-0     17   9   1             @delay_ms1
-0      9   5   0   160  4.3  @const45
-0     26  14   1   160  4.3  OW_reset_pulse
-0     28  15   1   169  2.2  OW_write_bit
- Inline        2   624  2.9  OW_write_byte
-0    107  57   2   260  4.5  MAIN
+0     17  12   1             @delay_ms1
+0      9   6   0   160  4.3  @const45
+0     25  18   1   129  4.2  OW_reset_pulse
+ Inline        1   169  2.2  OW_write_bit
+0     45  32   3   160  4.7  OW_write_byte
+0     46  32   2   260  4.5  MAIN
 
 Program metrics:
     Functions               5
-    Statements              65
-    Comments                84
-    Volume (V)              1957
-    Difficilty (D)          18.6
-    Effort to implement (E) 36354
-    Time to implement (T)   34 minutes
+    Statements              45
+    Comments                98
+    Volume (V)              1314
+    Difficilty (D)          19.8
+    Effort to implement (E) 25957
+    Time to implement (T)   24 minutes
     Est Delivered Bugs (B)  0
     Cyclomatic Complexity   7
-    Maintainability (MI)    101
+    Maintainability (MI)    133
 
  Segment     Used  Free
 -----------  ----  ----
-00000-000FF   187  63  
+00000-000FF   142  108  
 
 
 

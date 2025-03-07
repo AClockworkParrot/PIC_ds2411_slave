@@ -7,17 +7,18 @@
 014     OW_reset_pulse.del_count
 014     MAIN.@SCRATCH1
 015     OW_write_byte.write_data
-016     OW_write_byte.@SCRATCH1
-017     OW_write_bit.write_bit
+016     OW_write_byte.a
+017     OW_write_byte.@SCRATCH1
+018     OW_write_bit.write_bit
 
 ROM Allocation:
-0045  @delay_ms1
+0055  @delay_ms1
 0006  m
 000F  OW_reset_pulse
-0029  OW_write_bit
-007C  OW_write_byte
-0056  MAIN
-0056  @cinit
+0034  OW_write_bit
+0028  OW_write_byte
+0066  MAIN
+0066  @cinit
 
 Project Directory:
     C:\PIC_projects\ds2411_v2\

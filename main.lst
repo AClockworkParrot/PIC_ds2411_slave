@@ -1,20 +1,20 @@
-CCS PCB C Compiler, Version 4.068, 35766               07-мар-25 18:56
+CCS PCB C Compiler, Version 4.068, 35766               07-мар-25 19:34
 
                Filename: main.lst
 
-               ROM used: 187 words (73%)
-                         Largest free fragment is 69
+               ROM used: 142 words (55%)
+                         Largest free fragment is 114
                RAM used: 5 (31%) at main() level
-                         8 (50%) worst case
+                         9 (56%) worst case
                Stack:    1 locations
 
 *
 0000:  MOVWF  05
-0001:  GOTO   056
+0001:  GOTO   066
 0002:  GOTO   00F
 0003:  GOTO   006
-0004:  GOTO   029
-0005:  GOTO   045
+0004:  GOTO   028
+0005:  GOTO   055
 .................... #include "C:\PIC_projects\ds2411_v2\main.h" 
 .................... #include <10F220.h> 
 .................... //////// Standard Header file for the PIC10F220 device //////////////// 
@@ -31,23 +31,23 @@ CCS PCB C Compiler, Version 4.068, 35766               07-мар-25 18:56
 ....................  
 .................... #use delay(clock=8000000) 
 *
-0045:  MOVF   14,W
-0046:  BTFSC  03.2
-0047:  GOTO   055
-0048:  MOVLW  02
-0049:  MOVWF  11
-004A:  CLRF   10
-004B:  DECFSZ 10,F
-004C:  GOTO   04B
-004D:  DECFSZ 11,F
-004E:  GOTO   04A
-004F:  MOVLW  97
-0050:  MOVWF  10
-0051:  DECFSZ 10,F
-0052:  GOTO   051
-0053:  DECFSZ 14,F
-0054:  GOTO   048
-0055:  GOTO   0BF (RETURN)
+0055:  MOVF   14,W
+0056:  BTFSC  03.2
+0057:  GOTO   065
+0058:  MOVLW  02
+0059:  MOVWF  11
+005A:  CLRF   10
+005B:  DECFSZ 10,F
+005C:  GOTO   05B
+005D:  DECFSZ 11,F
+005E:  GOTO   05A
+005F:  MOVLW  97
+0060:  MOVWF  10
+0061:  DECFSZ 10,F
+0062:  GOTO   061
+0063:  DECFSZ 14,F
+0064:  GOTO   058
+0065:  GOTO   092 (RETURN)
 .................... #use rs232(baud=9600,parity=N,xmit=PIN_B0,rcv=PIN_B0,bits=8) 
 ....................  
 ....................  
@@ -107,17 +107,36 @@ CCS PCB C Compiler, Version 4.068, 35766               07-мар-25 18:56
 .................... #endif /* CONFIG_H_ */ 
 ....................  
 ....................  
-.................... byte const m[8] = {0x01, 0xE0, 0x65, 0x72 0x11, 0x00, 0x00, 0xA3};  // serial number sequence 
+.................... byte const m[8] = {0x01, 0xE0, 0x65, 0x72, 0x11, 0x00, 0x00, 0xA3};  // serial number sequence 
 ....................  
 ....................  
 .................... // func for detect reset pulse 
-.................... byte OW_reset_pulse (void) 
+.................... /*byte OW_reset_pulse (void) 
 .................... { 
-....................     byte del_count = 50; 
+....................    byte del_count = 50; 
+....................    while (del_count--) 
+....................    { 
+....................       delay_us(10); 
+....................       if (OW) 
+....................       { 
+....................          break; 
+....................       } 
+....................      
+....................    } 
+....................    if (del_count > 40)  
+....................    { 
+....................       return 0; 
+....................    } 
+....................    return 1; 
+.................... } 
+.................... */ 
+....................  
+....................  
+.................... byte OW_reset_pulse (void) 
+.................... {byte del_count = 50;    while (del_count--)  
 *
 000F:  MOVLW  32
 0010:  MOVWF  14
-....................     while (del_count--) // this loop takes 13.6 us 
 ....................     { 
 0011:  MOVF   14,W
 0012:  DECF   14,F
@@ -130,190 +149,141 @@ CCS PCB C Compiler, Version 4.068, 35766               07-мар-25 18:56
 0018:  DECFSZ 10,F
 0019:  GOTO   018
 001A:  NOP
-....................         if (OW)         // 124.8 us to here since master pulls bus low 
+....................         if (OW)          
 ....................         { 
 ....................             break; 
 001B:  GOTO   01D
 ....................         } 
 ....................     } 
 001C:  GOTO   011
-....................     if (del_count > 40) { 
-001D:  MOVLW  28
+....................     return (del_count < 40); // ?????? 1, ???? ??????? ?????????? ????? 
+001D:  MOVLW  27
 001E:  MOVWF  10
 001F:  MOVF   14,W
 0020:  SUBWF  10,W
 0021:  BTFSC  03.0
-0022:  GOTO   026
-....................         return 0; // too short 
+0022:  GOTO   025
 0023:  MOVLW  00
-0024:  MOVWF  11
-0025:  GOTO   028
-....................     } 
-....................     return 1;     // reset pulse detected 
-0026:  MOVLW  01
-0027:  MOVWF  11
+0024:  GOTO   026
+0025:  MOVLW  01
+0026:  MOVWF  11
 .................... } 
-0028:  GOTO   067 (RETURN)
+0027:  GOTO   077 (RETURN)
+....................  
+....................  
+....................  
 ....................  
 .................... // 1-wire slave write bit 
 .................... // must be run immediately after line is pulled down by master 
 .................... void OW_write_bit (byte write_bit) 
 .................... { 
 ....................     if (write_bit) 
-0029:  MOVF   17,F
-002A:  BTFSC  03.2
-002B:  GOTO   032
+*
+0034:  MOVF   18,F
+0035:  BTFSC  03.2
+0036:  GOTO   03D
 ....................     { 
 ....................         //writing a bit '1' 
 ....................         delay_us(55);//55                // bus is already pulled high by pullup resistor, so just wait 
-002C:  MOVLW  24
-002D:  MOVWF  10
-002E:  DECFSZ 10,F
-002F:  GOTO   02E
-0030:  NOP
+0037:  MOVLW  24
+0038:  MOVWF  10
+0039:  DECFSZ 10,F
+003A:  GOTO   039
+003B:  NOP
 ....................     } 
 ....................     else 
-0031:  GOTO   044
+003C:  GOTO   04F
 ....................     { 
 ....................         //writing a bit '0' 
 ....................         drive_OW_low();                    // drive the bus low 
-0032:  MOVLW  FE
-0033:  TRIS   6
-0034:  MOVWF  12
-0035:  BCF    12.0
-0036:  MOVF   12,W
-0037:  TRIS   6
-0038:  BCF    06.0
-....................         delay_us(17);//15 
-0039:  MOVLW  0B
-003A:  MOVWF  10
-003B:  DECFSZ 10,F
-003C:  GOTO   03B
-....................         drive_OW_high();                   // release the bus 
-003D:  MOVLW  FF
+003D:  MOVLW  FE
 003E:  TRIS   6
 003F:  MOVWF  12
+0040:  BCF    12.0
+0041:  MOVF   12,W
+0042:  TRIS   6
+0043:  BCF    06.0
+....................         delay_us(17);//15 
+0044:  MOVLW  0B
+0045:  MOVWF  10
+0046:  DECFSZ 10,F
+0047:  GOTO   046
+....................         drive_OW_high();                   // release the bus 
+0048:  MOVLW  FF
+0049:  TRIS   6
+004A:  MOVWF  12
 ....................         delay_us(35);//35 
-0040:  MOVLW  17
-0041:  MOVWF  10
-0042:  DECFSZ 10,F
-0043:  GOTO   042
+004B:  MOVLW  17
+004C:  MOVWF  10
+004D:  DECFSZ 10,F
+004E:  GOTO   04D
 ....................     } 
 .................... } 
-0044:  RETLW  00
 ....................  
 .................... // func for write bytes 
 .................... void OW_write_byte (byte write_data) 
 .................... { 
-....................     OW_write_bit(write_data & 0x01);     // sending LS-bit first 
+.................... byte a; 
+.................... for (a = 0; a < 8; a++) { 
 *
-007C:  MOVF   15,W
-007D:  ANDLW  01
-007E:  MOVWF  16
-007F:  MOVWF  17
-0080:  CALL   029
-....................     while (OW);                          // wait for master set bus low 
-0081:  GOTO   081
-....................     write_data >>= 1;                    // shift the data byte for the next bit to send 
-0082:  BCF    03.0
-0083:  RRF    15,F
-....................     OW_write_bit(write_data & 0x01); 
-0084:  MOVF   15,W
-0085:  ANDLW  01
-0086:  MOVWF  16
-0087:  MOVWF  17
-0088:  CALL   029
-....................     while (OW); 
-0089:  GOTO   089
-....................     write_data >>= 1; 
-008A:  BCF    03.0
-008B:  RRF    15,F
-....................     OW_write_bit(write_data & 0x01); 
-008C:  MOVF   15,W
-008D:  ANDLW  01
-008E:  MOVWF  16
-008F:  MOVWF  17
-0090:  CALL   029
-....................     while (OW); 
-0091:  GOTO   091
-....................     write_data >>= 1; 
-0092:  BCF    03.0
-0093:  RRF    15,F
-....................     OW_write_bit(write_data & 0x01); 
-0094:  MOVF   15,W
-0095:  ANDLW  01
-0096:  MOVWF  16
-0097:  MOVWF  17
-0098:  CALL   029
-....................     while (OW); 
-0099:  GOTO   099
-....................     write_data >>= 1; 
-009A:  BCF    03.0
-009B:  RRF    15,F
-....................     OW_write_bit(write_data & 0x01); 
-009C:  MOVF   15,W
-009D:  ANDLW  01
-009E:  MOVWF  16
-009F:  MOVWF  17
-00A0:  CALL   029
-....................     while (OW); 
-00A1:  GOTO   0A1
-....................     write_data >>= 1; 
-00A2:  BCF    03.0
-00A3:  RRF    15,F
-....................     OW_write_bit(write_data & 0x01); 
-00A4:  MOVF   15,W
-00A5:  ANDLW  01
-00A6:  MOVWF  16
-00A7:  MOVWF  17
-00A8:  CALL   029
-....................     while (OW); 
-00A9:  GOTO   0A9
-....................     write_data >>= 1; 
-00AA:  BCF    03.0
-00AB:  RRF    15,F
-....................     OW_write_bit(write_data & 0x01); 
-00AC:  MOVF   15,W
-00AD:  ANDLW  01
-00AE:  MOVWF  16
-00AF:  MOVWF  17
-00B0:  CALL   029
-....................     while (OW); 
-00B1:  GOTO   0B1
-....................     write_data >>= 1; 
-00B2:  BCF    03.0
-00B3:  RRF    15,F
-....................     OW_write_bit(write_data & 0x01); 
-00B4:  MOVF   15,W
-00B5:  ANDLW  01
-00B6:  MOVWF  16
-00B7:  MOVWF  17
-00B8:  CALL   029
+0028:  CLRF   16
+0029:  MOVLW  07
+002A:  MOVWF  10
+002B:  MOVF   16,W
+002C:  SUBWF  10,W
+002D:  BTFSS  03.0
+002E:  GOTO   054
+....................       OW_write_bit(write_data & 0x01);   
+002F:  MOVF   15,W
+0030:  ANDLW  01
+0031:  MOVWF  17
+0032:  MOVF   17,W
+0033:  MOVWF  18
+....................       while (OW); 
+*
+004F:  GOTO   04F
+....................       write_data >>= 1; 
+0050:  BCF    03.0
+0051:  RRF    15,F
+....................       } 
+0052:  INCF   16,F
+0053:  GOTO   029
+.................... } 
+0054:  GOTO   08C (RETURN)
+....................  
+.................... //timeout HIGH frezzy 
+.................... byte OW_wait_idle(byte timeout) 
+.................... { 
+....................    while (OW){ 
+....................       if (--timeout == 0) return 0; 
+....................       delay_us(1); 
+....................     } 
+....................     return 1; 
 .................... } 
 ....................  
 .................... void main() 
 .................... { 
 *
-0056:  CLRF   04
-0057:  BCF    12.0
-0058:  MOVF   12,W
-0059:  TRIS   6
-005A:  BSF    06.0
+0066:  CLRF   04
+0067:  BCF    12.0
+0068:  MOVF   12,W
+0069:  TRIS   6
+006A:  BSF    06.0
 .................... byte i; 
 ....................     // Initialization 
 ....................     //  setup_timer_0(RTCC_INTERNAL | RTCC_DIV_1); // Configure Timer 0 
 ....................     //   SET_TRIS_B(0xFF); // Configure port B as input 
 ....................     SETUP_WDT(WDT_2304MS); // Configure Watchdog Timer 
 *
-005D:  MOVLW  0F
-005E:  MOVWF  10
-005F:  MOVLW  07
-0060:  CLRF   01
-0061:  MOVLW  0F
-0062:  OPTION
-0063:  CLRWDT
-0064:  MOVF   10,W
-0065:  OPTION
+006D:  MOVLW  0F
+006E:  MOVWF  10
+006F:  MOVLW  07
+0070:  CLRF   01
+0071:  MOVLW  0F
+0072:  OPTION
+0073:  CLRWDT
+0074:  MOVF   10,W
+0075:  OPTION
 ....................  
 ....................     while (TRUE) { 
 ....................         // Periodic code execution, similar to interrupts 
@@ -321,51 +291,50 @@ CCS PCB C Compiler, Version 4.068, 35766               07-мар-25 18:56
 ....................          
 ....................         // Check for reset and reset 1-Wire device 
 ....................         if (OW_reset_pulse()) {  // if reset pulse detected 
-0066:  GOTO   002
-0067:  MOVF   11,F
-0068:  BTFSC  03.2
-0069:  GOTO   0BB
+0076:  GOTO   002
+0077:  MOVF   11,F
+0078:  BTFSC  03.2
+0079:  GOTO   08E
 ....................             delay_us(30); // эмпирически подобрать задержку 
-006A:  MOVLW  13
-006B:  MOVWF  10
-006C:  DECFSZ 10,F
-006D:  GOTO   06C
-006E:  GOTO   06F
+007A:  MOVLW  13
+007B:  MOVWF  10
+007C:  DECFSZ 10,F
+007D:  GOTO   07C
+007E:  GOTO   07F
 ....................         for ( i = 0; i < 8; i++) {  // Loop over the array length 
-006F:  CLRF   13
-0070:  MOVLW  07
-0071:  MOVWF  10
-0072:  MOVF   13,W
-0073:  SUBWF  10,W
-0074:  BTFSS  03.0
-0075:  GOTO   0BB
+007F:  CLRF   13
+0080:  MOVLW  07
+0081:  MOVWF  10
+0082:  MOVF   13,W
+0083:  SUBWF  10,W
+0084:  BTFSS  03.0
+0085:  GOTO   08E
 ....................     
 ....................         while (OW); // Wait for 1-Wire to be idle 
-0076:  GOTO   076
+0086:  GOTO   086
 ....................     
 ....................         OW_write_byte(m[i]); // Send the byte 
-0077:  MOVF   13,W
-0078:  CALL   006
-0079:  MOVWF  14
-007A:  MOVF   14,W
-007B:  MOVWF  15
+0087:  MOVF   13,W
+0088:  CALL   006
+0089:  MOVWF  14
+008A:  MOVWF  15
+008B:  GOTO   004
 ....................         } 
-*
-00B9:  INCF   13,F
-00BA:  GOTO   070
+008C:  INCF   13,F
+008D:  GOTO   080
 ....................    } 
 ....................          
 ....................      //   Watchdog Timer handling 
-....................      RESTART_WDT(); 
-00BB:  CLRWDT
+....................         RESTART_WDT(); 
+008E:  CLRWDT
 ....................         delay_ms(100); // Delay 0.1 s * 10 = 1 s 
-00BC:  MOVLW  64
-00BD:  MOVWF  14
-00BE:  GOTO   005
+008F:  MOVLW  64
+0090:  MOVWF  14
+0091:  GOTO   005
 ....................     }} 
-00BF:  GOTO   066
+0092:  GOTO   076
 ....................  
-00C0:  SLEEP
+0093:  SLEEP
 
 Configuration Fuses:
    Word  1: 0FEB   NOMCLR NOPROTECT NOWDT NOMCPU IOSC8

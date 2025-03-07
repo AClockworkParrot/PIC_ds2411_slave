@@ -1,11 +1,3 @@
->>> Warning 203 "main.c" Line 15(1,1): Condition always TRUE
->>> Warning 203 "main.c" Line 48(1,1): Condition always TRUE
->>> Warning 203 "main.c" Line 51(1,1): Condition always TRUE
->>> Warning 203 "main.c" Line 54(1,1): Condition always TRUE
->>> Warning 203 "main.c" Line 57(1,1): Condition always TRUE
->>> Warning 203 "main.c" Line 60(1,1): Condition always TRUE
->>> Warning 203 "main.c" Line 63(1,1): Condition always TRUE
->>> Warning 203 "main.c" Line 66(1,1): Condition always TRUE
->>> Warning 203 "main.c" Line 88(1,1): Condition always TRUE
-      Memory usage:   ROM=73%      RAM=31% - 50%
-      0 Errors,  9 Warnings.
+>>> Warning 203 "main.c" Line 34(1,1): Condition always TRUE
+*** Error 12 "main.c" Line 70(24,25): Undefined identifier  -- OW_wait_idle
+      1 Errors,  1 Warnings.
