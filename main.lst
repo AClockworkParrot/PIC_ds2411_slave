@@ -1,0 +1,298 @@
+CCS PCB C Compiler, Version 4.068, 35766               06-мар-25 20:06
+
+               Filename: main.lst
+
+               ROM used: 42 words (16%)
+                         Largest free fragment is 214
+               RAM used: 14 (88%) at main() level
+                         14 (88%) worst case
+               Stack:    0 locations
+
+*
+0000:  MOVWF  05
+0001:  GOTO   002
+.................... #include "C:\PIC_projects\ds2411_v2\main.h" 
+.................... #include <10F220.h> 
+.................... //////// Standard Header file for the PIC10F220 device //////////////// 
+.................... #device PIC10F220 
+.................... #list 
+....................  
+.................... #device adc=8 
+....................  
+.................... #FUSES NOWDT                    //No Watch Dog Timer 
+.................... #FUSES NOMCLR                   //Master Clear pin used for I/O 
+.................... #FUSES NOPROTECT                //Code not protected from reading 
+.................... #FUSES NOMCPU                   //Master Clear Pull-up disabled 
+.................... #FUSES IOSC8                    //INTOSC speed 8MHz 
+....................  
+.................... #use delay(clock=8000000) 
+.................... #use rs232(baud=9600,parity=N,xmit=PIN_B0,rcv=PIN_B0,bits=8) 
+....................  
+....................  
+.................... #include "config.h" 
+.................... /* 
+....................  *    config.h 
+....................  * 
+....................  *    created: April 2011 
+....................  *    author: Bartek Fabiszewski (www.fabiszewski.net) 
+....................  */ 
+....................  
+.................... #ifndef CONFIG_H_ 
+.................... #define CONFIG_H_ 
+.................... //#include <htc.h> 
+....................  
+.................... #define _XTAL_FREQ    4000000 // 4MHz 
+.................... //#define byte unsigned char 
+....................  
+.................... // leave uncommented only necessary module 
+.................... // only one module may be compiled into hex due to PIC code space limits 
+.................... #define SHT1x     // leave uncommented if you have sht2x sensor supporting i2c connected to pic 
+....................  
+.................... //#define TRUE                1 
+.................... //#define FALSE               0 
+.................... #define INPUT               1 
+.................... #define OUTPUT              0 
+.................... #define HIGH                1 
+.................... #define LOW                 0 
+....................  
+.................... #define OW                  PIN_B0          //pin 6 for 1-wire data (this can't be changed) 
+.................... #define TRIS_OW             TRISB0 
+....................  
+.................... #define MOD1                             //my first design used different pins 
+....................  
+.................... #ifdef MOD1 
+.................... #define DATA                RB6          //pin 12 for sht data 
+.................... #define SCK                 RB7          //pin 13 for sht clock 
+.................... #define TRIS_DATA           TRISB6 
+.................... #define TRIS_SCK            TRISB7 
+....................  
+.................... // some global vars 
+.................... byte ow_error;      // error on ow line 
+.................... ///byte sensor_error;  // error on sensor line 
+.................... ///byte scratchpad[6]; // 6-byte buffer [h-msb h-lsb h-crc t-msb t-lsb t-crc] 
+....................  
+....................  
+.................... #include "1wire.h" 
+.................... /* 
+....................  *    created: April 2011 
+....................  *    author: Bartek Fabiszewski (www.fabiszewski.net) 
+....................  */ 
+.................... #ifndef _1wire_H 
+.................... #define _1wire_H 
+....................  
+.................... // macros 
+.................... // I turned some functions into macros to avoid losing time on jumps 
+.................... #define drive_OW_low() { TRIS_OW = OUTPUT; OW = LOW; } 
+.................... #define drive_OW_high() { TRIS_OW = INPUT;} 
+.................... #define OW_presence_pulse() {\ 
+.................... drive_OW_low();  \ 
+.................... delay_us(120); \ 
+.................... drive_OW_high(); \ 
+.................... } 
+....................  
+.................... #define ROM_CMD                1        // ROM Command 
+.................... #define FUNCTION_CMD           2        // Function Command 
+....................  
+.................... // prototypes 
+.................... void OW_write_bit (byte write_data); 
+.................... byte OW_read_bit (void); 
+.................... byte OW_reset_pulse (void); 
+.................... void OW_write_byte (byte write_data); 
+.................... byte OW_read_byte (void); 
+.................... byte OW_match_search (byte write_bit); 
+.................... byte OW_match_bits (byte read_bit); 
+.................... void C_CRC(byte *CRCVal, byte value); 
+.................... byte CalcCRC(byte code_len, byte *code); 
+....................  
+.................... #endif 
+....................  
+.................... //#include "sht1x.h" 
+....................  
+....................  
+.................... #endif /* CONFIG_H_ */ 
+....................  
+....................  
+.................... byte m[8] ={0xBF, 0x42, 0x41, 0x52, 0x54, 0x45, 0x4B, 0xFF};  // serial number sequence: 
+0009:  MOVLW  BF
+000A:  MOVWF  14
+000B:  MOVLW  42
+000C:  MOVWF  15
+000D:  MOVLW  41
+000E:  MOVWF  16
+000F:  MOVLW  52
+0010:  MOVWF  17
+0011:  MOVLW  54
+0012:  MOVWF  18
+0013:  MOVLW  45
+0014:  MOVWF  19
+0015:  MOVLW  4B
+0016:  MOVWF  1A
+0017:  MOVLW  FF
+0018:  MOVWF  1B
+....................                                                                 // family code 0xBF, 
+....................                                                         
+.................... void Read_SN(void); 
+....................  
+.................... ///byte SN[8];     // serial number 
+.................... byte ow_status; // 1-wire status: 0 - waiting for reset 
+.................... // ROM_CMD - waiting for rom command 
+.................... // FUNCTION_CMD - waiting for function command 
+.................... byte ow_buffer; // buffer for data received on 1-wire line 
+.................... //byte timeout;   // timeout to go to sleep while inactive 
+.................... // because of tight timings we avoid sleep during conversation 
+....................  
+.................... ///#define INIT_SEQ (ow_status = 0, ow_error = 0, ow_buffer = 0, timeout = 10) 
+....................  
+.................... void delay_us() 
+.................... { 
+.................... } 
+....................  
+....................  
+.................... void ISR(void) 
+.................... { 
+....................     byte i; 
+....................  //   byte current_byte; 
+....................      
+....................     if (ow_status == ROM_CMD) { // ROM command 
+....................         ow_buffer = OW_read_byte(); 
+....................         if (ow_error) { 
+....................             goto RST; 
+....................         } 
+....................         switch (ow_buffer) { 
+....................             case 0x33: //send rom 
+....................                 i = 7; 
+....................                 do { 
+....................                     while (OW); 
+....................                     OW_write_byte(m[i]); 
+....................                 } while (i--); 
+....................                 break; 
+....................         } 
+....................    //     INIT_SEQ; 
+....................     end: 
+....................         //INTF = 0; 
+....................         return; 
+....................     } else if (ow_status == FUNCTION_CMD) { // Function command 
+....................         ow_buffer = OW_read_byte(); 
+....................         if (ow_error) { 
+....................             goto RST; 
+....................         } 
+....................         /*switch (ow_buffer) { 
+....................             case 0x44: // start conversion 
+....................                 // currently we have functions for sensirion sht sensors 
+....................                 // but any other sensor functions could be inserted here 
+....................                 // measurments from sensors should be put into scratchpad 
+....................                 sensor_error = 0; 
+....................                 // initiate sensor measurments and read readings into scratchpad 
+....................                 sht1x_read_buf(); // measure humidity and temperature 
+....................  
+....................                 // in case of sensor error reset it 
+....................                 if (sensor_error != 0) { 
+....................                     sht1x_connectionreset(); 
+....................                 } 
+....................                 break; 
+....................             case 0xBE: // read scratchpad 
+....................                 if (sensor_error == 0) { 
+....................                     while (OW); 
+....................                     OW_write_byte(scratchpad[0]); 
+....................                     while (OW); 
+....................                     OW_write_byte(scratchpad[1]); 
+....................                     while (OW); 
+....................                     OW_write_byte(scratchpad[2]); 
+....................                     while (OW); 
+....................                     OW_write_byte(scratchpad[3]); 
+....................                     while (OW); 
+....................                     OW_write_byte(scratchpad[4]); 
+....................                     while (OW); 
+....................                     OW_write_byte(scratchpad[5]); 
+....................                     while (OW); 
+....................                     //OW_write_byte(SENSOR_TYPE); // add sensor type so that 1-wire master knows how to process data 
+....................                 } 
+....................                 break; 
+....................         }*/ 
+....................  //       INIT_SEQ; 
+....................         //INTF = 0; 
+....................         return; 
+....................     } 
+.................... RST: 
+....................     if (OW_reset_pulse()) {  // if reset detected 
+....................         delay_us(30); 
+....................        // OW_presence_pulse(); // generate presence pulse 
+....................  //       INIT_SEQ; 
+....................         ow_status = ROM_CMD; // and wait for rom command 
+....................     }else{ 
+....................  //       INIT_SEQ; // else reset all settings 
+....................     } 
+....................     //INTF = 0; 
+....................     return; 
+.................... } 
+....................  
+.................... void main() 
+.................... { 
+*
+0002:  CLRF   04
+0003:  BCF    12.0
+0004:  MOVF   12,W
+0005:  TRIS   6
+0006:  BSF    06.0
+....................  
+....................    //setup_adc_ports(NO_ANALOGS); 
+....................    //setup_adc(ADC_OFF); 
+....................    setup_timer_0(RTCC_INTERNAL|RTCC_DIV_1); 
+*
+0019:  MOVLW  08
+001A:  OPTION
+....................  
+....................    // TODO: USER CODE!! 
+....................    /// TRISA = 0xFF; //all inputs 
+....................     
+....................    SET_TRIS_B(0xFF); 
+001B:  MOVLW  FF
+001C:  TRIS   6
+001D:  MOVWF  12
+....................    //TRISB = 0xFF; 
+....................    // PSA = 1;    // prescaler assigned to WDT 
+....................    // PS0 = 1; PS1 = 1; PS2 = 1; //prescale = 128, WDT period = 2.3 s 
+....................    SETUP_WDT(WDT_2304MS); 
+001E:  MOVLW  0F
+001F:  MOVWF  10
+0020:  MOVLW  07
+0021:  CLRF   01
+0022:  MOVLW  0F
+0023:  OPTION
+0024:  CLRWDT
+0025:  MOVF   10,W
+0026:  OPTION
+.................... //    Read_SN();  // read serial number from eeprom 
+....................    // INTEDG = 0; // external interrupt on falling edge 
+....................   //  INTE = 1;   // enable external interrupts 
+....................   //  GIE = 1;    // enable global interrupts 
+....................    while(TRUE) 
+....................    { 
+....................    //   while (timeout) { // go to sleep after 1 second of inactivity 
+....................     //  CLRWDT(); 
+....................    //  delay_ms(100); // 0.1 s * 10 = 1 s 
+....................   RESTART_WDT(); 
+0027:  CLRWDT
+....................  // timeout--; 
+....................       } 
+0028:  GOTO   027
+....................   RESTART_WDT(); 
+0029:  CLRWDT
+....................   //CLRWDT(); 
+....................       SLEEP(); 
+002A:  SLEEP
+....................     //  NOP(); 
+....................   // } 
+.................... } 
+....................  
+.................... /*void Read_SN(void) { 
+....................     byte address = 0; 
+....................     do { 
+....................         SN[7-address] = EEPROM_READ(address); 
+....................     } while (++address < 7); 
+....................     SN[7-address] = CalcCRC(7, SN); 
+.................... }*/ 
+002B:  SLEEP
+
+Configuration Fuses:
+   Word  1: 0FEB   NOMCLR NOPROTECT NOWDT NOMCPU IOSC8

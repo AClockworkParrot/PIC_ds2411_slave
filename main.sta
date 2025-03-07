@@ -1,0 +1,44 @@
+
+ROM used: 42 (16%)
+          42 (16%) including unused fragments
+
+          0 Average locations per line
+          1 Average locations per statement
+
+RAM used: 14 (88%) at main() level
+          14 (88%) worst case
+
+Stack used: 0 worst case (out of 2 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+  143    38 100  main.c
+   13     0   0  main.h
+  118     0   0  ..\..\Program Files (x86)\PICC\Devices\10F220.h
+   48     0   0  config.h
+   33     0   0  1wire.h
+----- -----
+  355    38 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     42 100   0   121  2.1  MAIN
+
+Program metrics:
+    Functions               1
+    Statements              38
+    Comments                159
+    Volume (V)              121
+    Difficilty (D)          2.1
+    Effort to implement (E) 256
+    Time to implement (T)   0 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   1
+    Maintainability (MI)    119
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-000FF    42  212  
+
+
+

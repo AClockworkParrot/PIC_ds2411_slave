@@ -1,0 +1,28 @@
+[PROJECT]
+Target=main.hex
+Development_Mode=
+Processor_Text=PIC10F220
+ToolSuite=CCS
+Processor=0xF220
+[main]
+Type=4
+Path=
+FileList=
+BuildTool=
+OptionString=
+AdditionalOptionString=
+[mru-list]
+1=main
+[Windows]
+0=0000 %S 0 0 796 451 3 0
+[Units]
+Link=0
+Count=1
+1=main.c
+[Opened Files]
+1=main.c
+2=config.h
+3=C:\PIC_projects\ds2411_v2\main.h
+4=C:\Program Files (x86)\PICC\Devices\10F220.h
+5=1wire.h
+6=

@@ -1,0 +1,46 @@
+010     @SCRATCH
+011     @SCRATCH
+011     _RETURN_
+012     @TRIS_B
+013     ow_error
+014-01B m
+01C     ow_status
+01D     ow_buffer
+
+ROM Allocation:
+0002  MAIN
+0002  @cinit
+0136  RST
+0136  end
+
+Project Directory:
+    C:\PIC_projects\ds2411_v2\
+
+Project Files:
+    main.c
+    main.h
+    ..\..\Program Files (x86)\PICC\Devices\10F220.h
+    config.h
+    1wire.h
+
+Units:
+    main.c (main)
+
+Compiler Settings:
+    Processor:      PIC10F220
+    Pointer Size:   5
+    ADC Range:      0-255
+    Opt Level:      0
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    Errors:      main.err
+    Ext Symbols: main.esym
+    INHX8:       main.hex
+    Symbols:     main.sym
+    List:        main.lst
+    Debug/COFF:  main.cof
+    Project:     main.PJT
+    Call Tree:   main.tre
+    Statistics:  main.sta
